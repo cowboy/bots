@@ -1,3 +1,18 @@
 - include_vars: vault.yml
 - name: bot daemon is loaded
   template: src=bots.conf dest=/etc/init/ backup=no
+
+# https://myodroid.wordpress.com/2015/12/13/restart-upstart-service-from-crontab/
+# http://stackoverflow.com/questions/31129348/can-upstarts-service-start-be-used-inside-a-cron-job
+- name: ensure env is set properly in cron for upstart to work
+  cron:
+    name: PATH
+    env: yes
+    value: "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+
+- name: ensure bot is restarted daily
+  cron:
+    name: restart bot daemon
+    job: /usr/sbin/service bots restart
+    hour: 5
+    minute: 0
