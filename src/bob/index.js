@@ -3,9 +3,16 @@ import {RtmClient, WebClient, MemoryDataStore} from '@slack/client';
 import mixinBotHelpers from '../lib/bot-helpers';
 
 // Message handlers.
-const lolHandler = text => {
-  if (/lol/i.test(text)) {
-    const newText = text.replace(/lol/ig, 'laugh out loud');
+const lolHandler = (text, {user}) => {
+  if (/OLO|LOL/.test(text) && user.name === 'falcon') {
+    const fingers = ':middle_finger:'.repeat(3);
+    return `${fingers} WHO'S LAUGHING OUT LOUD NOW, BITCH ${fingers}`;
+  }
+  const lolRe = /(l+)\s*([o0]+)\s*(l+)/gi;
+  if (lolRe.test(text)) {
+    const words = ['laugh', 'out', 'loud'];
+    const newText = text.replace(lolRe, (_, ...args) => words.reduce((arr, s, i) =>
+      [...arr, ...Array.from({length: args[i].length}, () => s)], []).join(' '));
     return `More like "${newText}" amirite`;
   }
   return false;
